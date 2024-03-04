@@ -38,4 +38,36 @@ class SpriteComponent extends Component {
     }
 }
 
-export { PositionComponent, MovementComponent, SpriteComponent };
+class AnimationComponent extends Component {
+    constructor(componentType, componentObj) {
+        super(componentType);
+        /*
+            {
+                down: {
+                    move: {
+                        srcRect: [
+                            {x,y,width,height},
+                            {x,y,width,height},
+                        ],
+                        currentFrame: 0,
+                        numFrames: 2,
+                        frameSpeedRate: 3,
+                        startTime: Date.now()
+                    },
+                    attack: {
+                        ...
+                    }
+                },
+                up: {},
+                left: {},
+                right: {}
+            }
+        */
+        this.frames = componentObj.frames;
+        this.currentTimeOfAnimation = componentObj.currentTimeOfAnimation;
+        this.facing = componentObj.facing;
+        this.shouldAnimate = componentObj.shouldAnimate;
+    }
+}
+
+export { PositionComponent, MovementComponent, SpriteComponent, AnimationComponent };

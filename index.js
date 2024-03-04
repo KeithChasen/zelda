@@ -1,4 +1,4 @@
-import { SpriteComponent } from "./classes/Component.js";
+import { LINK_ANIMATION } from "./animations/animations.js";
 import Registry from "./classes/Registry.js";
 
 export const canvas = document.getElementById('gameScreen');
@@ -12,11 +12,13 @@ class Game {
     constructor() {
         this.player = undefined;
         this.registry = new Registry(); 
+        this.gameTime = Date.now();
     }
 
     initialize = () => {
         this.registry.addSystem('MovementSystem');
         this.registry.addSystem('RenderSystem');
+        this.registry.addSystem('AnimationSystem');
 
         const dummyPositionComponent = {
             name: 'Position',
@@ -52,7 +54,8 @@ class Game {
         this.player = this.registry.createEntity([
             dummyMovementComponent,
             dummyPositionComponent,
-            dummySpriteComponent
+            dummySpriteComponent,
+            LINK_ANIMATION
         ]);
 
         this.registry.addEntityToSystem(this.player)
@@ -64,8 +67,12 @@ class Game {
     }
 
     update = () => {
+        this.gameTime = Date.now();
+
         this.registry.getSystem('MovementSystem').update();
         this.registry.getSystem('RenderSystem').update();
+        this.registry.getSystem('AnimationSystem').update(this.gameTime);
+
         requestAnimationFrame(this.update);
     }
 
@@ -78,38 +85,55 @@ class Game {
 
         if (this.player) {
             const movementComponent = this.player.components['Movement'];
+            const animationComponent = this.player.components['Animation'];
 
             if (type === 'keydown') {
                 switch(key) {
-                    case 'w':
+                    case 'w': {
+                        animationComponent.shouldAnimate = true;
                         movementComponent.vY = -1;
                         break;
-                    case 'a':
+                    }
+                    case 'a': {
+                        animationComponent.shouldAnimate = true;
                         movementComponent.vX = -1;
                         break;
-                    case 's':
+                    }
+                    case 's': {
+                        animationComponent.shouldAnimate = true;
                         movementComponent.vY = 1;
                         break;
-                    case 'd':
+                    }
+                    case 'd': {
+                        animationComponent.shouldAnimate = true;
                         movementComponent.vX = 1;
                         break;
+                    }
                     default:
                         break;
                 }
             } else if (type === 'keyup') {
                 switch(key) {
-                    case 'w':
+                    case 'w': {
+                        animationComponent.shouldAnimate = false;
                         movementComponent.vY = 0;
                         break;
-                    case 'a':
+                    }
+                    case 'a': {
+                        animationComponent.shouldAnimate = false;
                         movementComponent.vX = 0;
                         break;
-                    case 's':
+                    }
+                    case 's': {
+                        animationComponent.shouldAnimate = false;
                         movementComponent.vY = 0;
                         break;
-                    case 'd':
+                    }
+                    case 'd': {
+                        animationComponent.shouldAnimate = false;
                         movementComponent.vX = 0;
                         break;
+                    }
                     default:
                         break;
                 }
