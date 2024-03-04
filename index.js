@@ -1,11 +1,11 @@
 import Registry from "./classes/Registry.js";
 
-const canvas = document.getElementById('gameScreen');
+export const canvas = document.getElementById('gameScreen');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const c = canvas.getContext('2d');
+export const c = canvas.getContext('2d');
 
 class Game {
     constructor() {
@@ -22,6 +22,7 @@ class Game {
         }
 
         this.registry.addSystem('MovementSystem');
+        this.registry.addSystem('RenderSystem');
 
         const dummyPositionComponent = {
             name: 'Position',
@@ -56,20 +57,11 @@ class Game {
 
     update = () => {
         this.registry.getSystem('MovementSystem').update();
+        this.registry.getSystem('RenderSystem').update();
         requestAnimationFrame(this.update);
     }
 
     render = () => {
-        const { x, y, width, height } = this.player;
-
-        c.clearRect(0,0, canvas.width, canvas.height);
-
-        c.beginPath();
-        c.fillStyle= 'red';
-        c.fillRect(x, y, width, height);
-        c.stroke();
-        
-
         requestAnimationFrame(this.render);
     }
 

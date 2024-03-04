@@ -1,6 +1,6 @@
 import { MovementComponent, PositionComponent } from "./Component.js";
 import Entity from "./Entity.js";
-import { MovementSystem } from "./System.js";
+import { MovementSystem, RenderSystem } from "./System.js";
 
 class Registry {
     constructor() {
@@ -63,6 +63,10 @@ class Registry {
         switch (systemType) {
             case 'MovementSystem': {
                 newSystem = new MovementSystem(systemType);
+                break;
+            }
+            case 'RenderSystem': {
+                newSystem = new RenderSystem(systemType);
                 break;
             }
             default:
