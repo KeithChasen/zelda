@@ -14,13 +14,6 @@ class Game {
     }
 
     initialize = () => {
-        this.player = {
-            x: 0,
-            y: 0,
-            height: 50,
-            width: 60
-        }
-
         this.registry.addSystem('MovementSystem');
         this.registry.addSystem('RenderSystem');
 
@@ -37,17 +30,17 @@ class Game {
         const dummyMovementComponent = {
             name: 'Movement',
             value: {
-                vX: 1,
-                vY: 1
+                vX: 0,
+                vY: 0
             }
         }
 
-        const entity = this.registry.createEntity([
+        this.player = this.registry.createEntity([
             dummyMovementComponent,
             dummyPositionComponent
         ]);
 
-        this.registry.addEntityToSystem(entity)
+        this.registry.addEntityToSystem(this.player)
 
         console.log(this.registry, 'registry')
 
@@ -69,24 +62,43 @@ class Game {
         const { key, type } = e;
 
         if (this.player) {
+            const movementComponent = this.player.components['Movement'];
+
             if (type === 'keydown') {
                 switch(key) {
                     case 'w':
-                        this.player.y -= 1;
+                        movementComponent.vY = -1;
                         break;
                     case 'a':
-                        this.player.x -= 1;
+                        movementComponent.vX = -1;
                         break;
                     case 's':
-                        this.player.y += 1;
+                        movementComponent.vY = 1;
                         break;
                     case 'd':
-                        this.player.x += 1;
+                        movementComponent.vX = 1;
                         break;
                     default:
                         break;
                 }
-            }
+            } else if (type === 'keyup') {
+                switch(key) {
+                    case 'w':
+                        movementComponent.vY = 0;
+                        break;
+                    case 'a':
+                        movementComponent.vX = 0;
+                        break;
+                    case 's':
+                        movementComponent.vY = 0;
+                        break;
+                    case 'd':
+                        movementComponent.vX = 0;
+                        break;
+                    default:
+                        break;
+                }
+            } 
         }
     }
 }
