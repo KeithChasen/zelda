@@ -5,3 +5,5 @@ class Entity {
         this.components = {};
     }
 }
+
+export default Entity;

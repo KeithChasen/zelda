@@ -1,3 +1,5 @@
+import Registry from "./classes/Registry.js";
+
 const canvas = document.getElementById('gameScreen');
 
 canvas.width = window.innerWidth;
@@ -8,6 +10,7 @@ const c = canvas.getContext('2d');
 class Game {
     constructor() {
         this.player = undefined;
+        this.registry = new Registry(); 
     }
 
     initialize = () => {
@@ -17,6 +20,35 @@ class Game {
             height: 50,
             width: 60
         }
+
+        this.registry.addSystem('MovementSystem');
+
+        const dummyPositionComponent = {
+            name: 'Position',
+            value: {
+                x: 0,
+                y: 0,
+                height: 50,
+                width: 50
+            }
+        }
+
+        const dummyMovementComponent = {
+            name: 'Movement',
+            value: {
+                vX:0,
+                vY:0
+            }
+        }
+
+        const entity = this.registry.createEntity([
+            dummyMovementComponent,
+            dummyPositionComponent
+        ]);
+
+        this.registry.addEntityToSystem(entity)
+
+        console.log(this.registry, 'registry')
 
         document.addEventListener('keyup', this.handleUserInput)
         document.addEventListener('keydown', this.handleUserInput)

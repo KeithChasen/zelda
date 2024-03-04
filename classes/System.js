@@ -8,7 +8,7 @@ class System {
 class MovementSystem extends System {
     constructor(systemType) {
         super(systemType);
-        this.componentRequirements = ['Movements', 'Position'];
+        this.componentRequirements = ['Movement', 'Position'];
     }
 
     update = () => {
@@ -22,3 +22,5 @@ class MovementSystem extends System {
         }
     }
 }
+
+export { MovementSystem };
