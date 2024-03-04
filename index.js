@@ -36,8 +36,8 @@ class Game {
         const dummyMovementComponent = {
             name: 'Movement',
             value: {
-                vX:0,
-                vY:0
+                vX: 1,
+                vY: 1
             }
         }
 
@@ -55,6 +55,7 @@ class Game {
     }
 
     update = () => {
+        this.registry.getSystem('MovementSystem').update();
         requestAnimationFrame(this.update);
     }
 
