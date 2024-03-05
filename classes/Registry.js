@@ -9,6 +9,14 @@ class Registry {
         this.systems = {};
     }
 
+    update = () => {
+        this.entitiesToBeAdded.forEach(entity => {
+            this.addEntityToSystem(entity)
+        });
+
+        this.entitiesToBeAdded = [];
+    }
+
     // array of objects, ex: 
     /*
         {

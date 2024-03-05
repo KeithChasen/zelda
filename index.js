@@ -1,5 +1,6 @@
 import { LINK_ANIMATION } from "./animations/animations.js";
 import Registry from "./classes/Registry.js";
+import { openingScreen } from "./screens/screen.js";
 
 export const canvas = document.getElementById('gameScreen');
 
@@ -7,12 +8,15 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 export const c = canvas.getContext('2d');
+const TILE_SIZE = 70;
 
 class Game {
     constructor() {
         this.player = undefined;
         this.registry = new Registry(); 
         this.gameTime = Date.now();
+        this.numRows = 13;
+        this.numCols = 18;
     }
 
     initialize = () => {
@@ -25,8 +29,8 @@ class Game {
             value: {
                 x: 0,
                 y: 0,
-                height: 50,
-                width: 50
+                height: TILE_SIZE - 15,
+                width: TILE_SIZE - 15
             }
         }
 
@@ -58,16 +62,18 @@ class Game {
             LINK_ANIMATION
         ]);
 
-        this.registry.addEntityToSystem(this.player)
-
-        console.log(this.player, 'player')
+        // this.registry.addEntityToSystem(this.player)
 
         document.addEventListener('keyup', this.handleUserInput)
         document.addEventListener('keydown', this.handleUserInput)
+
+        this.loadScreen(openingScreen)
     }
 
     update = () => {
         this.gameTime = Date.now();
+
+        this.registry.update();
 
         this.registry.getSystem('MovementSystem').update();
         this.registry.getSystem('RenderSystem').update();
@@ -138,6 +144,45 @@ class Game {
                         break;
                 }
             } 
+        }
+    }
+
+    loadScreen = (screenObject) => {
+        for (let i = 0; i < this.numRows; i++) {
+            for (let j = 0; j < this.numCols; j++) {
+                const tile = screenObject.screen[i][j];
+                let srcRect = undefined;
+                let path = '';
+
+                if (typeof tile === 'number') {
+                    path = 'tiles/'
+                } else if (typeof tile === 'undefined') {
+                    continue;
+                }
+
+                const dummySpriteComponent = {
+                    name: 'Sprite',
+                    value: {
+                        path: screenObject.assetPath + path + tile + '.png',
+                        srcRect
+                    }
+                }
+
+                const dummyPositionComponent = {
+                    name: 'Position',
+                    value: {
+                        x: j * TILE_SIZE,
+                        y: i * TILE_SIZE,
+                        height: TILE_SIZE,
+                        width: TILE_SIZE
+                    }
+                }
+
+                this.registry.createEntity([
+                    dummySpriteComponent,
+                    dummyPositionComponent
+                ])
+            }
         }
     }
 }

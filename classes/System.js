@@ -51,21 +51,31 @@ class RenderSystem extends System {
             const { Position, Sprite } = this.entities[i].components;
             const { x, y, width, height } = Position;
             const { srcRect, sprite } = Sprite;
-            const { x: sx, y: sy, width: sW, height: sH } = srcRect;
+            
 
-            c.drawImage(
-                sprite,
+            if (srcRect) {
+                const { x: sx, y: sy, width: sW, height: sH } = srcRect;
 
-                sx, 
-                sy, 
-                sW, 
-                sH,
+                c.drawImage(
+                    sprite,
+    
+                    sx, 
+                    sy, 
+                    sW, 
+                    sH,
+    
+                    x, 
+                    y, 
+                    width, 
+                    height
+                );
+            } else {
+                c.drawImage(
+                    sprite,
 
-                x, 
-                y, 
-                width, 
-                height
-            );
+                    x, y, width, height
+                );
+            }
         } 
     }
 }
