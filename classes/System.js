@@ -76,6 +76,8 @@ class RenderSystem extends System {
             
 
             if (srcRect) {
+                c.globalCompositeOperation = 'source-over';
+
                 const { x: sx, y: sy, width: sW, height: sH } = srcRect;
 
                 c.drawImage(
@@ -92,6 +94,7 @@ class RenderSystem extends System {
                     height
                 );
             } else {
+                c.globalCompositeOperation = 'destination-over';
                 c.drawImage(
                     sprite,
 
