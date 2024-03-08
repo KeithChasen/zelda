@@ -17,7 +17,29 @@ class MovementSystem extends System {
         for (let i = 0; i < this.entities.length; i++) {
             const entity = this.entities[i];
 
-            let { Movement, Position, Animation } = entity.components;
+            let { Movement, Position, Animation, Collision } = entity.components;
+
+            if (Collision) {
+                const { facing } = Animation;
+
+                if (Movement.collisionX) {
+                    Movement.vX = 0;
+                
+                    if (facing === 'right') Position.x -= 2;
+                    if (facing === 'left') Position.x += 2;
+
+                    Movement.collisionX = false;
+                }
+
+                if (Movement.collisionY) {
+                    Movement.vY = 0;
+
+                    if (facing === 'up') Position.y += 2;
+                    if (facing === 'down') Position.y -= 2;
+
+                    Movement.collisionY = false;
+                }
+            }
 
             Position.x += Movement.vX;
             Position.y += Movement.vY;
@@ -126,14 +148,23 @@ class CollisionSystem extends System {
 
             let { x: px, y: py, width: pwidth, height: pheight } = player.components['Position'];
             let { x: ex, y: ey, width: ewidth, height: eheight } = entity.components['Position'];
+            const { Movement } = player.components;
 
             if (
                 px < ex + ewidth &&
-                px + pwidth > ex &&
+                px + pwidth + Movement.vX > ex &&
                 py < ey + eheight &&
-                py + pheight > ey
+                py + pheight + Movement.vY > ey
             ) {
                 console.log('HIT')
+
+                if (Movement.vX !== 0) {
+                    Movement.collisionX = true;
+                }
+
+                if (Movement.vY !== 0) {
+                    Movement.collisionY = true;
+                }
             }
 
         }
