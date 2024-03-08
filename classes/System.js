@@ -25,21 +25,20 @@ class MovementSystem extends System {
                 if (Movement.collisionX) {
                     Movement.vX = 0;
                 
-                    if (facing === 'right') Position.x -= 2;
-                    if (facing === 'left') Position.x += 2;
-
-                    Movement.collisionX = false;
+                    if (facing === 'right') Position.x -= 6;
+                    if (facing === 'left') Position.x += 6;
                 }
 
                 if (Movement.collisionY) {
                     Movement.vY = 0;
 
-                    if (facing === 'up') Position.y += 2;
-                    if (facing === 'down') Position.y -= 2;
-
-                    Movement.collisionY = false;
+                    if (facing === 'up') Position.y += 6;
+                    if (facing === 'down') Position.y -= 6;  
                 }
             }
+
+            Movement.collisionX = false;
+            Movement.collisionY = false;
 
             Position.x += Movement.vX;
             Position.y += Movement.vY;
@@ -66,15 +65,16 @@ class RenderSystem extends System {
         this.componentRequirements = ["Position", "Sprite"];
     }
 
-    update = () => {
+    update = (isDebug) => {
         c.clearRect(0,0, canvas.width, canvas.height);
 
         for (let i = 0; i < this.entities.length; i++) {
-            const { Position, Sprite } = this.entities[i].components;
+            const { Position, Sprite, Collision } = this.entities[i].components;
             const { x, y, width, height } = Position;
             const { srcRect, sprite } = Sprite;
             
-
+            c.beginPath();
+            
             if (srcRect) {
                 c.globalCompositeOperation = 'source-over';
 
@@ -101,6 +101,18 @@ class RenderSystem extends System {
                     x, y, width, height
                 );
             }
+
+            // console.log(isDebug, 'isDebug')
+
+            if (isDebug) {
+                if (Collision) {
+                    c.rect(x, y, width, height);
+                    c.lineWidth = 2
+                    c.strokeStyle = 'red';
+                    
+                }
+            }
+            c.stroke();
         } 
     }
 }

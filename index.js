@@ -17,6 +17,7 @@ class Game {
         this.gameTime = Date.now();
         this.numRows = 13;
         this.numCols = 18;
+        this.isDebug = false;
     }
 
     initialize = () => {
@@ -28,8 +29,8 @@ class Game {
         const dummyPositionComponent = {
             name: 'Position',
             value: {
-                x: 0,
-                y: 0,
+                x: 500,
+                y: 500,
                 height: TILE_SIZE - 15,
                 width: TILE_SIZE - 15
             }
@@ -84,7 +85,7 @@ class Game {
         this.registry.getSystem('CollisionSystem').update(this.player);
 
         this.registry.getSystem('MovementSystem').update();
-        this.registry.getSystem('RenderSystem').update();
+        this.registry.getSystem('RenderSystem').update(this.isDebug);
         this.registry.getSystem('AnimationSystem').update(this.gameTime);
 
         requestAnimationFrame(this.update);
@@ -105,22 +106,26 @@ class Game {
                 switch(key) {
                     case 'w': {
                         animationComponent.shouldAnimate = true;
-                        movementComponent.vY = -1;
+                        movementComponent.vY = -5;
                         break;
                     }
                     case 'a': {
                         animationComponent.shouldAnimate = true;
-                        movementComponent.vX = -1;
+                        movementComponent.vX = -5;
                         break;
                     }
                     case 's': {
                         animationComponent.shouldAnimate = true;
-                        movementComponent.vY = 1;
+                        movementComponent.vY = 5;
                         break;
                     }
                     case 'd': {
                         animationComponent.shouldAnimate = true;
-                        movementComponent.vX = 1;
+                        movementComponent.vX = 5;
+                        break;
+                    }
+                    case 'g': {
+                        this.isDebug = !this.isDebug;
                         break;
                     }
                     default:
