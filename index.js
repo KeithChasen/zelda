@@ -23,6 +23,7 @@ class Game {
         this.registry.addSystem('MovementSystem');
         this.registry.addSystem('RenderSystem');
         this.registry.addSystem('AnimationSystem');
+        this.registry.addSystem('CollisionSystem')
 
         const dummyPositionComponent = {
             name: 'Position',
@@ -55,11 +56,16 @@ class Game {
             }
         }
 
+        const dummyCollisionComponent = {
+            name: 'Collision'
+        }
+
         this.player = this.registry.createEntity([
             dummyMovementComponent,
             dummyPositionComponent,
             dummySpriteComponent,
-            LINK_ANIMATION
+            LINK_ANIMATION,
+            dummyCollisionComponent
         ]);
 
         // this.registry.addEntityToSystem(this.player)
@@ -74,6 +80,8 @@ class Game {
         this.gameTime = Date.now();
 
         this.registry.update();
+
+        this.registry.getSystem('CollisionSystem').update(this.player);
 
         this.registry.getSystem('MovementSystem').update();
         this.registry.getSystem('RenderSystem').update();
@@ -150,13 +158,25 @@ class Game {
     loadScreen = (screenObject) => {
         for (let i = 0; i < this.numRows; i++) {
             for (let j = 0; j < this.numCols; j++) {
+
+                let components = [];
                 const tile = screenObject.screen[i][j];
                 let srcRect = undefined;
                 let path = '';
 
                 if (typeof tile === 'number') {
                     path = 'tiles/'
-                } else if (typeof tile === 'undefined') {
+                } 
+
+                else if (typeof tile === 'string') {
+                    path = 'collidables/';
+                    const dummyCollisionComponent = {
+                        name: 'Collision',
+                    }
+                    components.push(dummyCollisionComponent);
+                }
+                
+                else if (typeof tile === 'undefined') {
                     continue;
                 }
 
@@ -168,6 +188,8 @@ class Game {
                     }
                 }
 
+                components.push(dummySpriteComponent)
+
                 const dummyPositionComponent = {
                     name: 'Position',
                     value: {
@@ -178,10 +200,9 @@ class Game {
                     }
                 }
 
-                this.registry.createEntity([
-                    dummySpriteComponent,
-                    dummyPositionComponent
-                ])
+                components.push(dummyPositionComponent)
+
+                const entity = this.registry.createEntity(components);
             }
         }
     }

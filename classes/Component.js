@@ -70,4 +70,16 @@ class AnimationComponent extends Component {
     }
 }
 
-export { PositionComponent, MovementComponent, SpriteComponent, AnimationComponent };
+class CollisionComponent extends Component {
+    constructor(componentType) {
+        super(componentType);
+    }
+}
+
+export { 
+    PositionComponent, 
+    MovementComponent, 
+    SpriteComponent, 
+    AnimationComponent,
+    CollisionComponent
+};

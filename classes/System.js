@@ -107,4 +107,37 @@ class AnimationSystem extends System {
     }
 }
 
-export { MovementSystem, RenderSystem, AnimationSystem };
+class CollisionSystem extends System {
+    constructor(systemType) {
+        super(systemType);
+        this.componentRequirements = ['Position', 'Collision']
+    }
+
+    update = (player) => {
+
+        // console.log(this.entities, 'ents')
+
+        for (let i = 0; i < this.entities.length; i++) {
+            const entity = this.entities[i];
+
+            if (player.id === entity.id) {
+                continue;
+            }
+
+            let { x: px, y: py, width: pwidth, height: pheight } = player.components['Position'];
+            let { x: ex, y: ey, width: ewidth, height: eheight } = entity.components['Position'];
+
+            if (
+                px < ex + ewidth &&
+                px + pwidth > ex &&
+                py < ey + eheight &&
+                py + pheight > ey
+            ) {
+                console.log('HIT')
+            }
+
+        }
+    }
+}
+
+export { MovementSystem, RenderSystem, AnimationSystem, CollisionSystem };
