@@ -192,7 +192,7 @@ class TransitionSystem extends System {
         this.componentRequirements = ['Position', 'Transition'];
     }
 
-    update = player => {
+    update = (player, eventBus, loadNewScreen) => {
         for (let i = 0; i < this.entities.length; i++) {
             const entity = this.entities[i];
 
@@ -206,6 +206,18 @@ class TransitionSystem extends System {
                 py + pheight > ey
             ) {
                 console.log('HIT Transition')
+
+                const { Transition } = entity.components;
+
+                const event = {
+                    args: {
+                        ...Transition,
+                        eventTime: 0
+                    },
+                    func: loadNewScreen
+                }
+
+                eventBus.push(event);
             }
 
         }

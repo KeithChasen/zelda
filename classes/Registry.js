@@ -6,6 +6,7 @@ class Registry {
     constructor() {
         this.numberOfEntities = 0;
         this.entitiesToBeAdded = [];
+        this.entitiesToBeRemoved = [];
         this.systems = {};
     }
 
@@ -148,6 +149,12 @@ class Registry {
 
     getSystem = systemType => {
         return this.systems[systemType];
+    }
+
+    removeAllEntities = () => {
+        Object.values(this.systems).forEach(system => {
+            system.entities = [];
+        })
     }
 }
 

@@ -1,6 +1,6 @@
 import { LINK_ANIMATION } from "./animations/animations.js";
 import Registry from "./classes/Registry.js";
-import { openingScreen } from "./screens/screen.js";
+import { openingScreen, shop } from "./screens/screen.js";
 
 export const canvas = document.getElementById('gameScreen');
 
@@ -18,6 +18,7 @@ class Game {
         this.numRows = 13;
         this.numCols = 18;
         this.isDebug = false;
+        this.eventBus = [];
     }
 
     initialize = () => {
@@ -27,50 +28,7 @@ class Game {
         this.registry.addSystem('CollisionSystem');
         this.registry.addSystem('TransitionSystem');
 
-        const dummyPositionComponent = {
-            name: 'Position',
-            value: {
-                x: 500,
-                y: 500,
-                height: TILE_SIZE - 15,
-                width: TILE_SIZE - 15
-            }
-        }
-
-        const dummyMovementComponent = {
-            name: 'Movement',
-            value: {
-                vX: 0,
-                vY: 0
-            }
-        }
-
-        const dummySpriteComponent = {
-            name: 'Sprite',
-            value: {
-                path: './assets/link.png',
-                srcRect: {
-                    x: 58,
-                    y: -1,
-                    width: 19,
-                    height: 19
-                }
-            }
-        }
-
-        const dummyCollisionComponent = {
-            name: 'Collision'
-        }
-
-        this.player = this.registry.createEntity([
-            dummyMovementComponent,
-            dummyPositionComponent,
-            dummySpriteComponent,
-            LINK_ANIMATION,
-            dummyCollisionComponent
-        ]);
-
-        // this.registry.addEntityToSystem(this.player)
+        this.createPlayer();
 
         document.addEventListener('keyup', this.handleUserInput)
         document.addEventListener('keydown', this.handleUserInput)
@@ -81,20 +39,130 @@ class Game {
     update = () => {
         this.gameTime = Date.now();
 
+        const event = this.eventBus[this.eventBus.length - 1];
+        // console.log(event, 'event')
+
+        if (event) {
+            /*
+                {
+                    args: {
+                        screen,
+                        coX,
+                        coY,
+                        eventTime: number
+                    },
+                    func: function 
+                }
+            */
+
+                const { args, func } = event;
+                if (args.eventTime <= this.gameTime) {
+                    // call func
+                    func(args);
+                    this.eventBus.pop();
+                }
+        }
+
         this.registry.update();
 
         this.registry.getSystem('CollisionSystem').update(this.player);
-        this.registry.getSystem('TransitionSystem').update(this.player);
+        this.registry.getSystem('TransitionSystem').update(this.player, this.eventBus, this.loadNewScreen);
 
         this.registry.getSystem('MovementSystem').update();
-        this.registry.getSystem('RenderSystem').update(this.isDebug);
-        this.registry.getSystem('AnimationSystem').update(this.gameTime);
 
         requestAnimationFrame(this.update);
     }
 
     render = () => {
+        this.registry.getSystem('AnimationSystem').update(this.gameTime);
+
+        this.registry.getSystem('RenderSystem').update(this.isDebug);
+
         requestAnimationFrame(this.render);
+    }
+
+    loadNewScreen = ({ coX, coY, screen }) => {
+        this.registry.removeAllEntities();
+
+        let newScreenObject;
+
+        switch(screen) {
+            case 'shop' : {
+                newScreenObject = shop
+                break;
+            }
+        }
+
+        this.createPlayer(coX, coY);
+        this.loadScreen(newScreenObject);
+    }
+
+    createPlayer = (coX, coY) => {
+        let newComponents = [];
+        if (this.player) {
+            const { components } = this.player;
+
+            Object.values(components).forEach(component => {
+                if (component.componentType === 'Position') {
+                    component.x = coX * TILE_SIZE;
+                    component.y = coY * TILE_SIZE;
+                }
+
+                if (component.componentType === 'Sprite') {
+                    component.path = component.sprite.src;
+                }
+
+                newComponents.push({ name: component.componentType, value: { ...component } })
+            });
+            newComponents.push(LINK_ANIMATION);
+        } else {
+            const dummyPositionComponent = {
+                name: 'Position',
+                value: {
+                    // x: coX * TILE_SIZE,
+                    // y: coY * TILE_SIZE,
+                    x: 500,
+                    y: 500,
+                    height: TILE_SIZE - 15,
+                    width: TILE_SIZE - 15
+                }
+            }
+    
+            const dummyMovementComponent = {
+                name: 'Movement',
+                value: {
+                    vX: 0,
+                    vY: 0
+                }
+            }
+    
+            const dummySpriteComponent = {
+                name: 'Sprite',
+                value: {
+                    path: './assets/link.png',
+                    srcRect: {
+                        x: 58,
+                        y: -1,
+                        width: 19,
+                        height: 19
+                    }
+                }
+            }
+    
+            const dummyCollisionComponent = {
+                name: 'Collision'
+            }
+
+            newComponents = [
+                dummyMovementComponent,
+                dummyPositionComponent,
+                dummySpriteComponent,
+                LINK_ANIMATION,
+                dummyCollisionComponent
+            ];
+        }
+
+        this.player = this.registry.createEntity(newComponents);
     }
 
     handleUserInput = e => {
