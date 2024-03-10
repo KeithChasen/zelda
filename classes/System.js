@@ -74,7 +74,7 @@ class RenderSystem extends System {
             const { srcRect, sprite } = Sprite;
             
             c.beginPath();
-            
+
             if (srcRect) {
                 c.globalCompositeOperation = 'source-over';
 
@@ -186,4 +186,36 @@ class CollisionSystem extends System {
     }
 }
 
-export { MovementSystem, RenderSystem, AnimationSystem, CollisionSystem };
+class TransitionSystem extends System {
+    constructor(systemType) {
+        super(systemType)
+        this.componentRequirements = ['Position', 'Transition'];
+    }
+
+    update = player => {
+        for (let i = 0; i < this.entities.length; i++) {
+            const entity = this.entities[i];
+
+            let { x: px, y: py, width: pwidth, height: pheight } = player.components['Position'];
+            let { x: ex, y: ey, width: ewidth, height: eheight } = entity.components['Position'];
+
+            if (
+                px < ex + ewidth &&
+                px + pwidth > ex &&
+                py < ey + eheight &&
+                py + pheight > ey
+            ) {
+                console.log('HIT Transition')
+            }
+
+        }
+    }
+}
+
+export { 
+    MovementSystem, 
+    RenderSystem, 
+    AnimationSystem, 
+    CollisionSystem,
+    TransitionSystem
+};

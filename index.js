@@ -24,7 +24,8 @@ class Game {
         this.registry.addSystem('MovementSystem');
         this.registry.addSystem('RenderSystem');
         this.registry.addSystem('AnimationSystem');
-        this.registry.addSystem('CollisionSystem')
+        this.registry.addSystem('CollisionSystem');
+        this.registry.addSystem('TransitionSystem');
 
         const dummyPositionComponent = {
             name: 'Position',
@@ -83,6 +84,7 @@ class Game {
         this.registry.update();
 
         this.registry.getSystem('CollisionSystem').update(this.player);
+        this.registry.getSystem('TransitionSystem').update(this.player);
 
         this.registry.getSystem('MovementSystem').update();
         this.registry.getSystem('RenderSystem').update(this.isDebug);
@@ -165,7 +167,7 @@ class Game {
             for (let j = 0; j < this.numCols; j++) {
 
                 let components = [];
-                const tile = screenObject.screen[i][j];
+                let tile = screenObject.screen[i][j];
                 let srcRect = undefined;
                 let path = '';
 
@@ -180,15 +182,42 @@ class Game {
                     }
                     components.push(dummyCollisionComponent);
                 }
+
+                else if (typeof tile === 'object') {
+                    /*
+                        {
+                            type: string - 'door', 'actionableTile,
+                            tile: string - 0,
+                            coX: number,
+                            coY: number,
+                            screen: string 
+                        }
+                    */
+
+                    const { type } = tile;
+                    if (type === 'door') {
+                        const { coX, coY, screen } = tile;
+                        const dummyTransitionComponent = {
+                            name: 'Transition',
+                            value: { coX, coY, screen }
+                        }
+
+                        components.push(dummyTransitionComponent);
+                    }
+                    path = 'actionableTiles/';
+                    tile = tile.tile;
+                }
                 
                 else if (typeof tile === 'undefined') {
                     continue;
                 }
 
+                const spriteName = screenObject.assetPath + path + tile + '.png';
+
                 const dummySpriteComponent = {
                     name: 'Sprite',
                     value: {
-                        path: screenObject.assetPath + path + tile + '.png',
+                        path: spriteName,
                         srcRect
                     }
                 }

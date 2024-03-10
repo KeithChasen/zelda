@@ -76,10 +76,21 @@ class CollisionComponent extends Component {
     }
 }
 
+class TransitionComponent extends Component {
+    constructor(componentType, componentObj) {
+        super(componentType);
+
+        this.screen = componentObj.screen;
+        this.coX = componentObj.coX;
+        this.coY = componentObj.coY;
+    }
+}
+
 export { 
     PositionComponent, 
     MovementComponent, 
     SpriteComponent, 
     AnimationComponent,
-    CollisionComponent
+    CollisionComponent,
+    TransitionComponent
 };
