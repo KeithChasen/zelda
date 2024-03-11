@@ -86,11 +86,21 @@ class TransitionComponent extends Component {
     }
 }
 
+class ActionableComponent extends Component {
+    constructor(componentType, componentObj) {
+        super(componentType);
+
+        this.func = componentObj.func;
+        this.args = componentObj.args;
+    }
+}
+
 export { 
     PositionComponent, 
     MovementComponent, 
     SpriteComponent, 
     AnimationComponent,
     CollisionComponent,
-    TransitionComponent
+    TransitionComponent,
+    ActionableComponent
 };

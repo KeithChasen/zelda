@@ -184,4 +184,34 @@ const LINK_ANIMATION = {
     }
 }
 
-export { LINK_ANIMATION };
+// player, registry, handleUserInput, id, newTilePositionComponent
+const LINK_PICK_SWORD_1 = ({ player, handleUserInput, id, newTilePositionComponent }) => {
+    const dummyPositionComponent = {
+        name: 'Position',
+        value: {
+            x: player.x - 8,
+            y: player.y - 40,
+            height: 30,
+            width: 20
+        }
+    }
+    
+    const dummySpriteComponent = {
+        name: 'Sprite',
+        value: {
+            srcRect: {
+                x: 60,
+                y: 175,
+                height: 30,
+                width: 20
+            },
+            path: "./assets/link.png"
+        }
+    }
+
+    const swordEntity = player.registry.createEntity([ dummyPositionComponent, dummySpriteComponent]);
+
+    console.log(swordEntity, 'swordEntity')
+}
+
+export { LINK_ANIMATION, LINK_PICK_SWORD_1 };

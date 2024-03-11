@@ -1,3 +1,4 @@
+import { LINK_PICK_SWORD_1 } from "../animations/animations.js";
 import { canvas, c } from "../index.js";
 
 class System {
@@ -186,6 +187,46 @@ class CollisionSystem extends System {
     }
 }
 
+class ActionableSystem extends System {
+    constructor(systemType) {
+        super(systemType)
+        this.componentRequirements = ['Actionable'];
+    }
+
+    update = (player, eventBus) => {
+        for (let i = 0; i < this.entities.length; i++) {
+            const entity = this.entities[i];
+
+            let { x: px, y: py, width: pwidth, height: pheight } = player.components['Position'];
+            let { x: ex, y: ey, width: ewidth, height: eheight } = entity.components['Position'];
+
+            if (
+                px < ex + ewidth &&
+                px + pwidth > ex &&
+                py < ey + eheight &&
+                py + pheight > ey
+            ) {
+                console.log('HIT ACTIONABLE')
+
+                const { Actionable } = entity.components;
+                const { args, func } = Actionable;
+
+                // LINK_PICK_SWORD_1(player)
+
+                const event = {
+                    args: {
+                        ...args,
+                        eventTime: 0
+                    },
+                    func
+                }
+
+                eventBus.push(event);
+            }
+        }
+    }
+}
+
 class TransitionSystem extends System {
     constructor(systemType) {
         super(systemType)
@@ -229,5 +270,6 @@ export {
     RenderSystem, 
     AnimationSystem, 
     CollisionSystem,
-    TransitionSystem
+    TransitionSystem,
+    ActionableSystem
 };

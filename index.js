@@ -1,4 +1,4 @@
-import { LINK_ANIMATION } from "./animations/animations.js";
+import { LINK_ANIMATION, LINK_PICK_SWORD_1 } from "./animations/animations.js";
 import Registry from "./classes/Registry.js";
 import { openingScreen, shop } from "./screens/screen.js";
 
@@ -27,6 +27,7 @@ class Game {
         this.registry.addSystem('AnimationSystem');
         this.registry.addSystem('CollisionSystem');
         this.registry.addSystem('TransitionSystem');
+        this.registry.addSystem('ActionableSystem');
 
         this.createPlayer();
 
@@ -69,6 +70,7 @@ class Game {
         this.registry.getSystem('TransitionSystem').update(this.player, this.eventBus, this.loadNewScreen);
 
         this.registry.getSystem('MovementSystem').update();
+        this.registry.getSystem('ActionableSystem').update(this.player, this.eventBus);
 
         requestAnimationFrame(this.update);
     }
@@ -269,11 +271,89 @@ class Game {
                             name: 'Transition',
                             value: { coX, coY, screen }
                         }
+                        tile = tile.tile;
+                        path = 'actionableTiles/';
 
                         components.push(dummyTransitionComponent);
+                    } else if (type === 'actTile') {
+                        const { eventType, tile1, tile2, remove } = tile;
+
+                        if (remove) {
+                            path = 'tiles/';
+                            tile = tile2;
+                        } else {
+                            path = 'actionableTiles/';
+                            tile = tile1;
+
+                            if (eventType === 'Sword_1') {
+                                // Do animation, create actionable component
+
+                                const dummyActionableComponent = {
+                                    name: "Actionable",
+                                    value: {
+                                        args: {
+                                            eventTime: 0,
+                                            handleUserInput: this.handleUserInput,
+                                            id: this.registry.numOfEntities,
+                                            player: this.player,
+                                            newTilePositionComponent: {
+                                                name: "Position",
+                                                value: {
+                                                    x: j * TILE_SIZE,
+                                                    y: i * TILE_SIZE,
+                                                    height: TILE_SIZE,
+                                                    width: TILE_SIZE
+                                                }
+                                            }
+                                        },
+                                        func: LINK_PICK_SWORD_1
+                                    }
+                                }
+
+                                components.push(dummyActionableComponent)
+    
+                                /**
+                                    const dummyActionableComponent = {
+                                        name: "Actionable",
+                                        value: {
+                                            args: {
+                                                eventTime: 0,
+                                                handleUserInput: this.handleUserInput
+                                                id: this.registry.numOfEntities,
+                                                player: this.player,
+                                                newTilePositionComponent: {
+                                                    name: "Position",
+                                                    value: {
+                                                        x: j * TILE_SIZE,
+                                                        y: i * TILE_SIZE,
+                                                        height: TILE_SIZE,
+                                                        width: TILE_SIZE
+                                                    }
+                                                }
+                                            },
+                                            func: Function
+                                        }
+                                    }
+
+                                    done in the actionableSystem
+
+                                    ...eventBus.push({
+                                        args,
+                                        func
+                                    })
+
+                                    //done in registry
+                                    registry.getEntityById(id: int, system: system) {
+                                        if (system.hasId(id)) return entityOfId 
+                                    }
+                                 */
+                            }
+                        }
+
+                        
                     }
-                    path = 'actionableTiles/';
-                    tile = tile.tile;
+
+                    // tile = tile.tile;
                 }
                 
                 else if (typeof tile === 'undefined') {
