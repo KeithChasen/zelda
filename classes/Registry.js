@@ -31,6 +31,18 @@ class Registry {
         });
 
         this.entitiesToBeAdded = [];
+
+        this.entitiesToBeRemoved.forEach(entity => {
+            this.removeEntityFromSystem(entity);
+        });
+
+        this.entitiesToBeRemoved = [];
+    }
+
+    removeEntityFromSystem = entity => {
+        Object.values(this.systems).forEach(system => {
+            system.entities = system.entities.filter(sysEntity => sysEntity.id !== entity.id);
+        })
     }
 
     // array of objects, ex: 

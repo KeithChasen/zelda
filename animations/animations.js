@@ -259,7 +259,9 @@ const LINK_PICK_SWORD_1 = ({ player, handleUserInput, id, newTilePositionCompone
             document.addEventListener('keyup', handleUserInput)
             document.addEventListener('keydown', handleUserInput)
             player.components['Animation']['frames'][facing]['move'] = originalSrcRect;
+            player.components['Sprite']['srcRect'] = originalSrcRect.srcRect[0];
             player.registry.entitiesToBeRemoved.push(swordEntity);
+            player.components['Animation'].shouldAnimate = false;
         } else {
             // keep animation running
             requestAnimationFrame(recursion)
