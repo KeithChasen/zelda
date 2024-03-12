@@ -34,7 +34,8 @@ class Game {
         document.addEventListener('keyup', this.handleUserInput)
         document.addEventListener('keydown', this.handleUserInput)
 
-        this.loadScreen(openingScreen)
+        // this.loadScreen(openingScreen)
+        this.loadScreen(shop)
     }
 
     update = () => {
@@ -294,7 +295,7 @@ class Game {
                                         args: {
                                             eventTime: 0,
                                             handleUserInput: this.handleUserInput,
-                                            id: this.registry.numOfEntities,
+                                            id: this.registry.numberOfEntities,
                                             player: this.player,
                                             newTilePositionComponent: {
                                                 name: "Position",

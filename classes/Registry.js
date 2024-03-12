@@ -181,6 +181,22 @@ class Registry {
             system.entities = [];
         })
     }
+
+    removeEntityById = (id, systemType) => {
+        const system = this.systems[systemType];
+
+        for (let i=0; i<system.entities.length; i++) {
+            const entity = system.entities[i];
+            if (id === entity.id) {
+                //remove 
+                system.entities = system.entities.slice(0, i).concat(
+                    system.entities.slice(i+1)
+                );
+
+                return entity;
+            }
+        }
+    }
 }
 
 export default Registry;
